@@ -1,0 +1,22 @@
+<a href="/">
+    <h1>LOGO</h1>
+</a>
+
+<!-- get appends after /?q = 'input given' -->
+<form method="get" action="{% url 'home' %}">
+    <input type="text" name="q" placeholder="Search Rooms....">
+</form>
+
+
+{% if request.user.is_authenticated %}
+    <p>Hello {{request.user}}</p>
+    <a href="{% url 'logout' %}">LOGOUT</a>
+
+{% else %}
+        {% url 'login' as login_url %}
+        {% if request.get_full_path != login_url %}
+            <a href="{% url 'login' %}">LOGIN</a>
+        {% endif %}
+
+{% endif %}
+<hr>

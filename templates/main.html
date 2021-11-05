@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Study Bud</title>
+    {% load static %}
+    <link rel="stylesheet" href='{% static "styles/main.css" %}'>
+</head>
+
+
+<body>
+
+    {% include 'navbar.html' %}
+
+    <!-- flash message display -->
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+        <li>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    <!-- end -->
+
+    {% block content %}
+
+    {% endblock %}
+</body>
+
+</html>
