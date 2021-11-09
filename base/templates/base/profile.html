@@ -1,26 +1,51 @@
 {% extends 'main.html' %}
 
 {% block content %}
-<style>
-    .profile-conatiner {
-        display: grid;
-        grid-template-columns: 1fr 2fr 1fr;
-    }
-</style>
-<h1>{{user.username}}</h1>
+<main class="profile-page layout layout--3">
+  <div class="container">
+    <!-- Topics Start -->
+    {% include 'base/topics_components.html' %}
+    <!-- Topics End -->
 
-<div class="profile-conatiner">
-    <div>
-        {% include 'base/topics_components.html' %}
-    </div>
+    <!-- Room List Start -->
+    <div class="roomList">
+      <div class="profile">
+        <div class="profile__avatar">
+          <div class="avatar avatar--large active">
+            <img src="https://randomuser.me/api/portraits/men/11.jpg" />
+          </div>
+        </div>
+        <div class="profile__info">
+          <h3>{{user.username}}</h3>
+          <p>@{{user.username}}</p>
+          <a href="edit-user.html" class="btn btn--main btn--pill">Edit Profile</a>
+        </div>
+        <div class="profile__about">
+          <h3>About</h3>
+          <p>
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Consequuntur illo tenetur
+            facilis sunt nemo debitis quisquam hic atque aut? Ducimus alias placeat optio
+            accusamus repudiandae quis ab ex exercitationem rem?
+          </p>
+        </div>
+      </div>
 
-    <div>
-        {% include 'base/feed_components.html' %}
-    </div>
+      <div class="roomList__header">
+        <div>
+          <h2>Study Rooms Hosted by {{user.username}}</a>
+          </h2>
+        </div>
+      </div>
 
-    <div>
-        {% include 'base/activity_component.html' %}
+      {% include 'base/feed_components.html' %}
+
     </div>
-</div>
+    <!-- Room List End -->
+
+    <!-- Activities Start -->
+    {% include 'base/activity_component.html' %}
+    <!-- Activities End -->
+  </div>
+</main>
 
 {% endblock content %}

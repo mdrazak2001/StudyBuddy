@@ -1,5 +1,7 @@
 # Create your views here.
 # from typing import ContextManager
+from collections import namedtuple
+from django.http.request import host_validation_re
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.db.models import Q
@@ -120,15 +122,19 @@ def userProfile(request, pk):
 @login_required(login_url='login')
 def createRoom(request):
     form = RoomForm()
+    topics = Topic.objects.all()
     if request.method == 'POST':
-        form = RoomForm(request.POST)
-        if form.is_valid():
-            room = form.save(commit=False)
-            room.host = request.user
-            room.save()
-            return redirect('home')
+        topic_name = request.POST.get('topic')
+        topic, created = Topic.objects.get_or_create(name=topic_name)
+        Room.objects.create(
+            host=request.user,
+            topic=topic,
+            name=request.POST.get('name'),
+            descripton=request.POST.get('descripton')
+        )
+        return redirect('home')
 
-    context = {'form': form}
+    context = {'form': form, 'topics': topics}
     return render(request, 'base/room_form.html', context)
 
 
@@ -137,17 +143,21 @@ def updateRoom(request, pk):
     room = Room.objects.get(id=pk)
     # print(room.name)
     form = RoomForm(instance=room)
+    topics = Topic.objects.all()
 
     if request.user != room.host:
         return HttpResponse('You aint allowed here !!')
 
     if request.method == 'POST':
-        form = RoomForm(request.POST, instance=room)
-        if form.is_valid:
-            form.save()
-            return redirect('home')
+        topic_name = request.POST.get('topic')
+        topic, created = Topic.objects.get_or_create(name=topic_name)
+        room.name = topic_name = request.POST.get('name')
+        room.topic = topic
+        room.descripton = request.POST.get('descripton')
+        room.save()
+        return redirect('home')
 
-    context = {'form': form}
+    context = {'form': form, 'topics': topics, 'room': room}
     return render(request, 'base/room_form.html', context)
 
 
