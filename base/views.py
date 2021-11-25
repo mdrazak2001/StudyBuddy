@@ -13,7 +13,7 @@ from django.contrib.auth.forms import UserCreationForm
 
 
 from .models import Room, Topic, Message
-from .forms import RoomForm
+from .forms import RoomForm, UserForm
 
 # rooms = [
 #     {'id': 1, 'name': 'Room 1'},
@@ -81,7 +81,7 @@ def home(request):
     # end
 
     room_count = rooms.count()
-    topics = Topic.objects.all()
+    topics = Topic.objects.all()[0:4]
 
     # pass rooms, topics variable from Room model
     context = {'rooms': rooms, 'topics': topics,
@@ -94,15 +94,16 @@ def room(request, pk):
     room = Room.objects.get(id=pk)
     room_messages = room.message_set.all().order_by('-created')
     participants = room.participants.all()
-
+    body = request.POST.get('body')
     if request.method == 'POST':
-        Message.objects.create(
-            user=request.user,
-            room=room,
-            body=request.POST.get('body')
-        )
-        room.participants.add(request.user)
-        return redirect('room', pk=room.id)
+        if body != None:
+            Message.objects.create(
+                user=request.user,
+                room=room,
+                body=body
+            )
+            room.participants.add(request.user)
+            return redirect('room', pk=room.id)
 
     context = {'room': room, 'room_messages': room_messages,
                'participants': participants}
@@ -177,3 +178,20 @@ def deleteMessage(request, pk):
         message.delete()
         return redirect('home')
     return render(request, 'base/delete.html', {'obj': message})
+
+
+@login_required(login_url='login')
+def updateUser(request, pk):
+    user = request.user
+    form = UserForm(instance=request.user)
+    if request.method == 'POST':
+        form = UserForm(request.POST, instance=user)
+        form.save()
+        return redirect('user-profile', pk=user.id)
+    return render(request, 'base/update-user.html', {'form': form})
+
+
+def topicsPage(request):
+    q = request.GET.get('q') if request.GET.get('q') != None else ''
+    topics = Topic.objects.filter(name__icontains=q)
+    return render(request, 'base/topics.html', {'topics': topics})
